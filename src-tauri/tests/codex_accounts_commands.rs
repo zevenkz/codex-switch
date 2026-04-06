@@ -1,8 +1,8 @@
-use cc_switch_lib::codex_accounts::auth_file::parse_codex_account_from_auth_json;
-use cc_switch_lib::codex_accounts::{codex_accounts_store_path, CodexAccountStore};
-use cc_switch_lib::codex_accounts::CodexQuotaSnapshot;
-use cc_switch_lib::codex_accounts::oauth::OAuthSession;
-use cc_switch_lib::{
+use codex_switch_lib::codex_accounts::auth_file::parse_codex_account_from_auth_json;
+use codex_switch_lib::codex_accounts::{codex_accounts_store_path, CodexAccountStore};
+use codex_switch_lib::codex_accounts::CodexQuotaSnapshot;
+use codex_switch_lib::codex_accounts::oauth::OAuthSession;
+use codex_switch_lib::{
     cancel_codex_account_oauth_test_hook, delete_codex_account_test_hook,
     get_active_codex_account_test_hook, list_codex_accounts_test_hook,
     complete_codex_account_oauth_test_hook,
@@ -15,17 +15,17 @@ use serde_json::json;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, OnceLock};
 
-use cc_switch_lib::{AppState, Database};
+use codex_switch_lib::{AppState, Database};
 
 fn ensure_test_home() -> &'static Path {
     static HOME: OnceLock<PathBuf> = OnceLock::new();
     HOME.get_or_init(|| {
-        let base = std::env::temp_dir().join("cc-switch-test-home");
+        let base = std::env::temp_dir().join("codex-switch-test-home");
         if base.exists() {
             let _ = std::fs::remove_dir_all(&base);
         }
         std::fs::create_dir_all(&base).expect("create test home");
-        std::env::set_var("CC_SWITCH_TEST_HOME", &base);
+        std::env::set_var("CODEX_SWITCH_TEST_HOME", &base);
         std::env::set_var("HOME", &base);
         #[cfg(windows)]
         std::env::set_var("USERPROFILE", &base);
@@ -39,7 +39,7 @@ fn reset_test_fs() {
     for sub in [
         ".claude",
         ".codex",
-        ".cc-switch",
+        ".codex-switch",
         ".gemini",
         ".config",
         ".openclaw",
@@ -49,7 +49,7 @@ fn reset_test_fs() {
             let _ = std::fs::remove_dir_all(&path);
         }
     }
-    let _ = cc_switch_lib::update_settings(cc_switch_lib::AppSettings::default());
+    let _ = codex_switch_lib::update_settings(codex_switch_lib::AppSettings::default());
 }
 
 fn test_mutex() -> &'static Mutex<()> {
@@ -172,7 +172,7 @@ fn seed_store_account(
     store.upsert_account(record).expect("seed store account");
 }
 
-fn load_account(store_path: &std::path::PathBuf, account_id: &str) -> cc_switch_lib::codex_accounts::CodexAccountRecord {
+fn load_account(store_path: &std::path::PathBuf, account_id: &str) -> codex_switch_lib::codex_accounts::CodexAccountRecord {
     CodexAccountStore::new(store_path.clone())
         .list_accounts()
         .expect("list accounts")
@@ -216,7 +216,7 @@ async fn codex_accounts_commands_get_active_account_returns_active_record() {
     let _guard = acquire_test_mutex();
     reset_test_fs();
     let home = ensure_test_home();
-    let store_path = home.join(".cc-switch").join("codex-accounts.json");
+    let store_path = home.join(".codex-switch").join("codex-accounts.json");
     let mut store = CodexAccountStore::new(store_path);
     let mut record =
         parse_codex_account_from_auth_json(sample_live_auth("active@example.com", "acct-1"))
@@ -452,7 +452,7 @@ async fn codex_accounts_commands_refresh_account_updates_saved_quota_snapshot() 
     reset_test_fs();
     let home = ensure_test_home();
 
-    let store_path = home.join(".cc-switch").join("codex-accounts.json");
+    let store_path = home.join(".codex-switch").join("codex-accounts.json");
     seed_store_account(
         store_path.clone(),
         sample_live_auth("quota@example.com", "acct-quota"),
@@ -490,7 +490,7 @@ async fn codex_accounts_commands_refresh_all_preserves_old_quota_on_network_fail
     reset_test_fs();
     let home = ensure_test_home();
 
-    let store_path = home.join(".cc-switch").join("codex-accounts.json");
+    let store_path = home.join(".codex-switch").join("codex-accounts.json");
     seed_store_account(
         store_path.clone(),
         sample_live_auth("ok@example.com", "acct-ok"),
@@ -548,7 +548,7 @@ async fn codex_accounts_commands_refresh_account_reports_expired_token_distinctl
     reset_test_fs();
     let home = ensure_test_home();
 
-    let store_path = home.join(".cc-switch").join("codex-accounts.json");
+    let store_path = home.join(".codex-switch").join("codex-accounts.json");
     seed_store_account(
         store_path.clone(),
         sample_expired_live_auth("expired@example.com", "acct-expired"),
@@ -729,7 +729,7 @@ async fn codex_accounts_commands_complete_oauth_surfaces_token_exchange_failure(
             })
         },
         |_session: &OAuthSession, _code: &str| {
-            Box::pin(async move { Err(cc_switch_lib::AppError::Message("token exchange failed".to_string())) })
+            Box::pin(async move { Err(codex_switch_lib::AppError::Message("token exchange failed".to_string())) })
         },
     )
     .await
@@ -795,7 +795,7 @@ async fn codex_accounts_commands_refresh_account_accepts_top_level_oauth_token_s
     reset_test_fs();
     let home = ensure_test_home();
 
-    let store_path = home.join(".cc-switch").join("codex-accounts.json");
+    let store_path = home.join(".codex-switch").join("codex-accounts.json");
     seed_store_account(
         store_path.clone(),
         sample_oauth_exchange_token_response("top-level@example.com", "acct-top-level"),

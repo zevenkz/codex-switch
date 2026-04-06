@@ -1,6 +1,6 @@
 use serde_json::json;
 
-use cc_switch_lib::{
+use codex_switch_lib::{
     get_claude_settings_path, read_json_file, write_codex_live_atomic, AppError, AppType, McpApps,
     McpServer, MultiAppConfig, Provider, ProviderMeta, ProviderService,
 };
@@ -177,7 +177,7 @@ command = "say"
         .expect("switch provider should succeed");
 
     let auth_value: serde_json::Value =
-        read_json_file(&cc_switch_lib::get_codex_auth_path()).expect("read auth.json");
+        read_json_file(&codex_switch_lib::get_codex_auth_path()).expect("read auth.json");
     assert_eq!(
         auth_value.get("OPENAI_API_KEY").and_then(|v| v.as_str()),
         Some("fresh-key"),
@@ -185,7 +185,7 @@ command = "say"
     );
 
     let config_text =
-        std::fs::read_to_string(cc_switch_lib::get_codex_config_path()).expect("read config.toml");
+        std::fs::read_to_string(codex_switch_lib::get_codex_config_path()).expect("read config.toml");
     assert!(
         config_text.contains("mcp_servers.echo-server"),
         "config.toml should contain synced MCP servers"
@@ -449,7 +449,7 @@ fn switch_packycode_gemini_updates_security_selected_type() {
     ProviderService::switch(&state, AppType::Gemini, "packy-gemini")
         .expect("switching to PackyCode Gemini should succeed");
 
-    // Gemini security settings are written to ~/.gemini/settings.json, not ~/.cc-switch/settings.json
+    // Gemini security settings are written to ~/.gemini/settings.json, not ~/.codex-switch/settings.json
     let settings_path = home.join(".gemini").join("settings.json");
     assert!(
         settings_path.exists(),
@@ -504,7 +504,7 @@ fn packycode_partner_meta_triggers_security_flag_even_without_keywords() {
     ProviderService::switch(&state, AppType::Gemini, "packy-meta")
         .expect("switching to partner meta provider should succeed");
 
-    // Gemini security settings are written to ~/.gemini/settings.json, not ~/.cc-switch/settings.json
+    // Gemini security settings are written to ~/.gemini/settings.json, not ~/.codex-switch/settings.json
     let settings_path = home.join(".gemini").join("settings.json");
     assert!(
         settings_path.exists(),
@@ -558,7 +558,7 @@ fn switch_google_official_gemini_sets_oauth_security() {
     ProviderService::switch(&state, AppType::Gemini, "google-official")
         .expect("switching to Google official Gemini should succeed");
 
-    // Gemini security settings are written to ~/.gemini/settings.json, not ~/.cc-switch/settings.json
+    // Gemini security settings are written to ~/.gemini/settings.json, not ~/.codex-switch/settings.json
     let gemini_settings = home.join(".gemini").join("settings.json");
     assert!(
         gemini_settings.exists(),

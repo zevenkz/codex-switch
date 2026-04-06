@@ -53,7 +53,7 @@ export const geminiProviderPresets: GeminiProviderPreset[] = [
   {
     name: "PackyCode",
     websiteUrl: "https://www.packyapi.com",
-    apiKeyUrl: "https://www.packyapi.com/register?aff=cc-switch",
+    apiKeyUrl: "https://www.packyapi.com/register?aff=codex-switch",
     settingsConfig: {
       env: {
         GOOGLE_GEMINI_BASE_URL: "https://www.packyapi.com",
@@ -75,7 +75,7 @@ export const geminiProviderPresets: GeminiProviderPreset[] = [
   {
     name: "Cubence",
     websiteUrl: "https://cubence.com",
-    apiKeyUrl: "https://cubence.com/signup?code=CCSWITCH&source=ccs",
+    apiKeyUrl: "https://cubence.com/signup?code=CODEXSWITCH&source=ccs",
     settingsConfig: {
       env: {
         GOOGLE_GEMINI_BASE_URL: "https://api.cubence.com",
@@ -143,7 +143,7 @@ export const geminiProviderPresets: GeminiProviderPreset[] = [
   {
     name: "AICoding",
     websiteUrl: "https://aicoding.sh",
-    apiKeyUrl: "https://aicoding.sh/i/CCSWITCH",
+    apiKeyUrl: "https://aicoding.sh/i/CODEXSWITCH",
     settingsConfig: {
       env: {
         GOOGLE_GEMINI_BASE_URL: "https://api.aicoding.sh",
@@ -163,7 +163,7 @@ export const geminiProviderPresets: GeminiProviderPreset[] = [
   {
     name: "CrazyRouter",
     websiteUrl: "https://www.crazyrouter.com",
-    apiKeyUrl: "https://www.crazyrouter.com/register?aff=OZcm&ref=cc-switch",
+    apiKeyUrl: "https://www.crazyrouter.com/register?aff=OZcm&ref=codex-switch",
     settingsConfig: {
       env: {
         GOOGLE_GEMINI_BASE_URL: "https://crazyrouter.com",

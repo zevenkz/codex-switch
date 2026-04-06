@@ -435,7 +435,7 @@ export const providerPresets: ProviderPreset[] = [
   {
     name: "PackyCode",
     websiteUrl: "https://www.packyapi.com",
-    apiKeyUrl: "https://www.packyapi.com/register?aff=cc-switch",
+    apiKeyUrl: "https://www.packyapi.com/register?aff=codex-switch",
     settingsConfig: {
       env: {
         ANTHROPIC_BASE_URL: "https://www.packyapi.com",
@@ -455,7 +455,7 @@ export const providerPresets: ProviderPreset[] = [
   {
     name: "Cubence",
     websiteUrl: "https://cubence.com",
-    apiKeyUrl: "https://cubence.com/signup?code=CCSWITCH&source=ccs",
+    apiKeyUrl: "https://cubence.com/signup?code=CODEXSWITCH&source=ccs",
     settingsConfig: {
       env: {
         ANTHROPIC_BASE_URL: "https://api.cubence.com",
@@ -495,7 +495,7 @@ export const providerPresets: ProviderPreset[] = [
   {
     name: "RightCode",
     websiteUrl: "https://www.right.codes",
-    apiKeyUrl: "https://www.right.codes/register?aff=CCSWITCH",
+    apiKeyUrl: "https://www.right.codes/register?aff=CODEXSWITCH",
     settingsConfig: {
       env: {
         ANTHROPIC_BASE_URL: "https://www.right.codes/claude",
@@ -531,7 +531,7 @@ export const providerPresets: ProviderPreset[] = [
   {
     name: "AICoding",
     websiteUrl: "https://aicoding.sh",
-    apiKeyUrl: "https://aicoding.sh/i/CCSWITCH",
+    apiKeyUrl: "https://aicoding.sh/i/CODEXSWITCH",
     settingsConfig: {
       env: {
         ANTHROPIC_BASE_URL: "https://api.aicoding.sh",
@@ -548,7 +548,7 @@ export const providerPresets: ProviderPreset[] = [
   {
     name: "CrazyRouter",
     websiteUrl: "https://www.crazyrouter.com",
-    apiKeyUrl: "https://www.crazyrouter.com/register?aff=OZcm&ref=cc-switch",
+    apiKeyUrl: "https://www.crazyrouter.com/register?aff=OZcm&ref=codex-switch",
     settingsConfig: {
       env: {
         ANTHROPIC_BASE_URL: "https://crazyrouter.com",
@@ -588,7 +588,7 @@ export const providerPresets: ProviderPreset[] = [
     nameKey: "providerForm.presets.ucloud",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_cc-switch",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_codex-switch",
     settingsConfig: {
       env: {
         ANTHROPIC_BASE_URL: "https://api.modelverse.cn",

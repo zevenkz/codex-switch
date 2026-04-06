@@ -1,11 +1,11 @@
-use cc_switch_lib::codex_accounts::auth_file::{
+use codex_switch_lib::codex_accounts::auth_file::{
     parse_codex_account_from_auth_json, write_live_codex_auth_json,
 };
-use cc_switch_lib::codex_accounts::{
+use codex_switch_lib::codex_accounts::{
     codex_accounts_store_path, CodexAccountRecord, CodexAccountStore, CodexDeleteAccountError,
     CodexQuotaSnapshot, StoredCodexAccounts,
 };
-use cc_switch_lib::codex_accounts::watcher::{
+use codex_switch_lib::codex_accounts::watcher::{
     poll_codex_auth_change, AuthFileDebouncer, sync_live_auth_once,
 };
 
@@ -141,7 +141,7 @@ fn codex_accounts_store_path_uses_app_config_dir() {
 
     assert_eq!(
         codex_accounts_store_path(),
-        home.join(".cc-switch").join("codex-accounts.json")
+        home.join(".codex-switch").join("codex-accounts.json")
     );
 }
 
@@ -161,7 +161,7 @@ fn codex_accounts_store_bootstrap_imports_live_auth_as_active_account() {
     )
     .expect("write live auth");
 
-    let mut store = CodexAccountStore::new(home.join(".cc-switch").join("codex-accounts.json"));
+    let mut store = CodexAccountStore::new(home.join(".codex-switch").join("codex-accounts.json"));
     let imported = store
         .bootstrap_from_live_auth(&live_auth_path)
         .expect("bootstrap from live auth");
@@ -194,7 +194,7 @@ fn codex_accounts_store_bootstrap_preserves_existing_quota_for_active_account() 
     )
     .expect("write live auth");
 
-    let store_path = home.join(".cc-switch").join("codex-accounts.json");
+    let store_path = home.join(".codex-switch").join("codex-accounts.json");
     let mut store = CodexAccountStore::new(store_path.clone());
     let imported = store
         .bootstrap_from_live_auth(&live_auth_path)
@@ -407,7 +407,7 @@ fn codex_accounts_store_upsert_replaces_matching_account_id_without_creating_dup
     reset_test_fs();
     let home = ensure_test_home();
 
-    let store_path = home.join(".cc-switch").join("codex-accounts.json");
+    let store_path = home.join(".codex-switch").join("codex-accounts.json");
     let mut store = CodexAccountStore::new(store_path);
 
     let first = store
@@ -429,7 +429,7 @@ fn codex_accounts_store_set_active_account_clears_previous_active_flag() {
     reset_test_fs();
     let home = ensure_test_home();
 
-    let store_path = home.join(".cc-switch").join("codex-accounts.json");
+    let store_path = home.join(".codex-switch").join("codex-accounts.json");
     let mut store = CodexAccountStore::new(store_path);
 
     let first = store
@@ -466,7 +466,7 @@ fn codex_accounts_store_deleting_active_account_is_rejected() {
     reset_test_fs();
     let home = ensure_test_home();
 
-    let store_path = home.join(".cc-switch").join("codex-accounts.json");
+    let store_path = home.join(".codex-switch").join("codex-accounts.json");
     let mut store = CodexAccountStore::new(store_path);
 
     let account = store
@@ -512,7 +512,7 @@ fn codex_accounts_store_upserting_active_record_deactivates_previous_active_acco
     reset_test_fs();
     let home = ensure_test_home();
 
-    let store_path = home.join(".cc-switch").join("codex-accounts.json");
+    let store_path = home.join(".codex-switch").join("codex-accounts.json");
     let mut store = CodexAccountStore::new(store_path);
     store
         .upsert_account(make_record("acct-1", true))
@@ -541,7 +541,7 @@ fn codex_auth_watcher_syncs_live_auth_changes_into_store_and_emits_update_event(
     reset_test_fs();
     let home = ensure_test_home();
 
-    let store_path = home.join(".cc-switch").join("codex-accounts.json");
+    let store_path = home.join(".codex-switch").join("codex-accounts.json");
     let live_auth_path = home.join(".codex").join("auth.json");
     std::fs::create_dir_all(live_auth_path.parent().expect("auth parent"))
         .expect("create codex dir");
@@ -615,7 +615,7 @@ fn codex_accounts_watcher_poll_imports_live_auth_and_marks_account_active() {
     )
     .expect("write live auth");
 
-    let mut store = CodexAccountStore::new(home.join(".cc-switch").join("codex-accounts.json"));
+    let mut store = CodexAccountStore::new(home.join(".codex-switch").join("codex-accounts.json"));
     let mut previous_signature = None;
 
     let changed = poll_codex_auth_change(&mut store, &live_auth_path, &mut previous_signature)
@@ -644,7 +644,7 @@ fn codex_accounts_watcher_poll_debounces_duplicate_content_bursts() {
     )
     .expect("write live auth");
 
-    let mut store = CodexAccountStore::new(home.join(".cc-switch").join("codex-accounts.json"));
+    let mut store = CodexAccountStore::new(home.join(".codex-switch").join("codex-accounts.json"));
     let mut previous_signature = None;
 
     assert!(

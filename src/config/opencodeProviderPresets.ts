@@ -937,7 +937,7 @@ export const opencodeProviderPresets: OpenCodeProviderPreset[] = [
   {
     name: "PackyCode",
     websiteUrl: "https://www.packyapi.com",
-    apiKeyUrl: "https://www.packyapi.com/register?aff=cc-switch",
+    apiKeyUrl: "https://www.packyapi.com/register?aff=codex-switch",
     settingsConfig: {
       npm: "@ai-sdk/anthropic",
       name: "PackyCode",
@@ -966,7 +966,7 @@ export const opencodeProviderPresets: OpenCodeProviderPreset[] = [
   {
     name: "Cubence",
     websiteUrl: "https://cubence.com",
-    apiKeyUrl: "https://cubence.com/signup?code=CCSWITCH&source=ccs",
+    apiKeyUrl: "https://cubence.com/signup?code=CODEXSWITCH&source=ccs",
     settingsConfig: {
       npm: "@ai-sdk/anthropic",
       name: "Cubence",
@@ -1026,7 +1026,7 @@ export const opencodeProviderPresets: OpenCodeProviderPreset[] = [
   {
     name: "RightCode",
     websiteUrl: "https://www.right.codes",
-    apiKeyUrl: "https://www.right.codes/register?aff=CCSWITCH",
+    apiKeyUrl: "https://www.right.codes/register?aff=CODEXSWITCH",
     settingsConfig: {
       npm: "@ai-sdk/openai",
       name: "RightCode",
@@ -1085,7 +1085,7 @@ export const opencodeProviderPresets: OpenCodeProviderPreset[] = [
   {
     name: "AICoding",
     websiteUrl: "https://aicoding.sh",
-    apiKeyUrl: "https://aicoding.sh/i/CCSWITCH",
+    apiKeyUrl: "https://aicoding.sh/i/CODEXSWITCH",
     settingsConfig: {
       npm: "@ai-sdk/anthropic",
       name: "AICoding",
@@ -1115,7 +1115,7 @@ export const opencodeProviderPresets: OpenCodeProviderPreset[] = [
   {
     name: "CrazyRouter",
     websiteUrl: "https://www.crazyrouter.com",
-    apiKeyUrl: "https://www.crazyrouter.com/register?aff=OZcm&ref=cc-switch",
+    apiKeyUrl: "https://www.crazyrouter.com/register?aff=OZcm&ref=codex-switch",
     settingsConfig: {
       npm: "@ai-sdk/anthropic",
       name: "CrazyRouter",

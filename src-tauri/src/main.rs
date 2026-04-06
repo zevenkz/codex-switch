@@ -12,5 +12,5 @@ fn main() {
         }
     }
 
-    cc_switch_lib::run();
+    codex_switch_lib::run();
 }

@@ -1,4 +1,4 @@
-use cc_switch_lib::codex_accounts::oauth::{
+use codex_switch_lib::codex_accounts::oauth::{
     await_callback_signal, build_authorize_url, build_token_exchange_form, generate_pkce_pair,
     read_callback_query_with_timeout, read_http_request, success_http_response_for_test,
     OAuthCallbackOutcome, OAuthSession,
@@ -132,7 +132,7 @@ async fn codex_accounts_oauth_listener_times_out_without_callback() {
     let result = await_callback_signal(
         async {
             std::future::pending::<()>().await;
-            Ok::<(), cc_switch_lib::AppError>(())
+            Ok::<(), codex_switch_lib::AppError>(())
         },
         std::time::Duration::from_millis(25),
         std::future::pending::<()>(),
@@ -151,7 +151,7 @@ async fn codex_accounts_oauth_listener_can_be_cancelled() {
     let result = await_callback_signal(
         async {
             tokio::time::sleep(std::time::Duration::from_secs(5)).await;
-            Ok::<(), cc_switch_lib::AppError>(())
+            Ok::<(), codex_switch_lib::AppError>(())
         },
         std::time::Duration::from_secs(5),
         async {

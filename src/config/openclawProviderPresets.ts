@@ -900,7 +900,7 @@ export const openclawProviderPresets: OpenClawProviderPreset[] = [
   {
     name: "PackyCode",
     websiteUrl: "https://www.packyapi.com",
-    apiKeyUrl: "https://www.packyapi.com/register?aff=cc-switch",
+    apiKeyUrl: "https://www.packyapi.com/register?aff=codex-switch",
     settingsConfig: {
       baseUrl: "https://www.packyapi.com",
       apiKey: "",
@@ -945,7 +945,7 @@ export const openclawProviderPresets: OpenClawProviderPreset[] = [
   {
     name: "Cubence",
     websiteUrl: "https://cubence.com",
-    apiKeyUrl: "https://cubence.com/signup?code=CCSWITCH&source=ccs",
+    apiKeyUrl: "https://cubence.com/signup?code=CODEXSWITCH&source=ccs",
     settingsConfig: {
       baseUrl: "https://api.cubence.com",
       apiKey: "",
@@ -1037,7 +1037,7 @@ export const openclawProviderPresets: OpenClawProviderPreset[] = [
   {
     name: "RightCode",
     websiteUrl: "https://www.right.codes",
-    apiKeyUrl: "https://www.right.codes/register?aff=CCSWITCH",
+    apiKeyUrl: "https://www.right.codes/register?aff=CODEXSWITCH",
     settingsConfig: {
       baseUrl: "https://www.right.codes/claude",
       apiKey: "",
@@ -1129,7 +1129,7 @@ export const openclawProviderPresets: OpenClawProviderPreset[] = [
   {
     name: "AICoding",
     websiteUrl: "https://aicoding.sh",
-    apiKeyUrl: "https://aicoding.sh/i/CCSWITCH",
+    apiKeyUrl: "https://aicoding.sh/i/CODEXSWITCH",
     settingsConfig: {
       baseUrl: "https://api.aicoding.sh",
       apiKey: "",
@@ -1175,7 +1175,7 @@ export const openclawProviderPresets: OpenClawProviderPreset[] = [
   {
     name: "CrazyRouter",
     websiteUrl: "https://www.crazyrouter.com",
-    apiKeyUrl: "https://www.crazyrouter.com/register?aff=OZcm&ref=cc-switch",
+    apiKeyUrl: "https://www.crazyrouter.com/register?aff=OZcm&ref=codex-switch",
     settingsConfig: {
       baseUrl: "https://crazyrouter.com/v1",
       apiKey: "",
@@ -1269,7 +1269,7 @@ export const openclawProviderPresets: OpenClawProviderPreset[] = [
     nameKey: "providerForm.presets.ucloud",
     websiteUrl: "https://www.compshare.cn",
     apiKeyUrl:
-      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_cc-switch",
+      "https://www.compshare.cn/coding-plan?ytag=GPU_YY_YX_git_codex-switch",
     settingsConfig: {
       baseUrl: "https://api.modelverse.cn/v1",
       apiKey: "",

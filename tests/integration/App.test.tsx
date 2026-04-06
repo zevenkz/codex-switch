@@ -57,7 +57,7 @@ vi.mock("@tauri-apps/api/event", () => ({
 
 const renderApp = (AppComponent: ComponentType) =>
   render(
-    <ThemeProvider defaultTheme="system" storageKey="cc-switch-theme-test">
+    <ThemeProvider defaultTheme="system" storageKey="codex-switch-theme-test">
       <Suspense fallback={<div data-testid="loading">loading</div>}>
         <AppComponent />
       </Suspense>
@@ -390,7 +390,7 @@ describe("Codex Switch app shell", () => {
 
     expect(document.documentElement.classList.contains("dark")).toBe(true);
     expect(document.documentElement.classList.contains("light")).toBe(false);
-    expect(window.localStorage.getItem("cc-switch-theme-test")).toBe("dark");
+    expect(window.localStorage.getItem("codex-switch-theme-test")).toBe("dark");
   });
 
   it("supports single-select keyboard navigation in the language control", async () => {
