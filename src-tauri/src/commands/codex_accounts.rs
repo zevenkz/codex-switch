@@ -14,6 +14,20 @@ use crate::store::AppState;
 
 const DEFAULT_CODEX_OAUTH_CALLBACK_PORT: u16 = 1455;
 const DEFAULT_CODEX_OAUTH_CALLBACK_TIMEOUT: Duration = Duration::from_secs(300);
+const QUIT_CODEX_APPLESCRIPT: &str = r#"if application "Codex" is running then
+    tell application "Codex" to quit
+    tell application "System Events"
+        repeat 300 times
+            if not (exists process "Codex") then
+                exit repeat
+            end if
+            delay 0.1
+        end repeat
+        if exists process "Codex" then
+            error "Timed out waiting for Codex to quit"
+        end if
+    end tell
+end if"#;
 
 fn notify_codex_accounts_changed(app: &AppHandle) {
     crate::tray::refresh_tray_menu(app);
@@ -134,10 +148,7 @@ fn restart_codex_desktop_app() -> Result<(), AppError> {
     #[cfg(target_os = "macos")]
     {
         let quit_output = Command::new("osascript")
-            .args([
-                "-e",
-                r#"if application "Codex" is running then tell application "Codex" to quit"#,
-            ])
+            .args(["-e", QUIT_CODEX_APPLESCRIPT])
             .output()
             .map_err(|error| AppError::Message(format!("Failed to quit Codex: {error}")))?;
         if !quit_output.status.success() {
@@ -146,8 +157,6 @@ fn restart_codex_desktop_app() -> Result<(), AppError> {
                 String::from_utf8_lossy(&quit_output.stderr).trim()
             )));
         }
-
-        std::thread::sleep(Duration::from_millis(600));
 
         let open_output = Command::new("open")
             .args(["-a", "Codex"])
@@ -162,6 +171,11 @@ fn restart_codex_desktop_app() -> Result<(), AppError> {
     }
 
     Ok(())
+}
+
+#[cfg_attr(not(feature = "test-hooks"), doc(hidden))]
+pub fn quit_codex_applescript_for_test() -> &'static str {
+    QUIT_CODEX_APPLESCRIPT
 }
 
 pub(crate) fn switch_codex_account_and_restart_internal(

@@ -537,6 +537,63 @@ describe("Codex Switch app shell", () => {
     ).toBeInTheDocument();
   });
 
+  it("switches accounts from the enable action without opening the delete confirmation dialog", async () => {
+    let accounts: CodexAccountRecord[] = [
+      makeAccountRecord({
+        id: "acct-active",
+        email: "active@example.com",
+        account_id: "acct-active",
+        is_active: true,
+      }),
+      makeAccountRecord({
+        id: "acct-target",
+        email: "target@example.com",
+        account_id: "acct-target",
+        is_active: false,
+      }),
+    ];
+
+    invokeMock.mockImplementation(async (command: string, args?: Record<string, unknown>) => {
+      switch (command) {
+        case "list_codex_accounts":
+          return JSON.parse(JSON.stringify(accounts));
+        case "switch_codex_account":
+          accounts = accounts.map((account) => ({
+            ...account,
+            is_active:
+              account.account_id === args?.accountId || account.id === args?.accountId,
+          }));
+          return true;
+        case "set_window_theme":
+          return true;
+        default:
+          return undefined;
+      }
+    });
+
+    const user = userEvent.setup();
+    const { default: App } = await import("@/App");
+    renderApp(App);
+
+    expect(await screen.findByText("target@example.com")).toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", { name: t("codexSwitch.accounts.enable") }),
+    );
+
+    await waitFor(() =>
+      expect(invokeMock).toHaveBeenCalledWith("switch_codex_account", {
+        accountId: "acct-target",
+      }),
+    );
+    expect(
+      screen.queryByRole("heading", { name: t("codexSwitch.accounts.deleteTitle") }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: t("codexSwitch.accounts.inUse") }),
+    ).toBeInTheDocument();
+  });
+
   it("falls back to the mock preview when Tauri commands are unavailable", async () => {
     invokeMock.mockRejectedValue(new Error("no tauri runtime"));
     listenMock.mockRejectedValue(new Error("no event bridge"));

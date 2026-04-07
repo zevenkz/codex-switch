@@ -243,6 +243,7 @@ fn codex_accounts_oauth_success_page_attempts_to_close_the_window() {
 
     assert!(response.contains("window.close()"));
     assert!(response.contains("Authentication complete"));
+    assert!(!response.contains("about:blank"));
 }
 
 #[tokio::test]

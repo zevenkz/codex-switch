@@ -95,6 +95,27 @@ fn sample_live_auth_with_nested_chatgpt_account_claim() -> serde_json::Value {
     })
 }
 
+fn sample_top_level_oauth_token_response() -> serde_json::Value {
+    json!({
+        "access_token": jwt(json!({
+            "sub": "acct-top-level",
+            "account_id": "acct-top-level",
+            "email": "top-level@example.com",
+            "plan_type": "plus",
+            "name": "Top Level User"
+        })),
+        "refresh_token": "refresh-token",
+        "id_token": jwt(json!({
+            "sub": "acct-top-level",
+            "email": "top-level@example.com",
+            "plan_type": "plus",
+            "name": "Top Level User"
+        })),
+        "token_type": "Bearer",
+        "expires_in": 3600
+    })
+}
+
 fn make_record(account_id: &str, is_active: bool) -> CodexAccountRecord {
     CodexAccountRecord {
         id: format!("record-{account_id}"),
@@ -375,6 +396,41 @@ fn parse_live_auth_write_rehydrates_null_fields_from_account_record() {
     assert_eq!(written["plan_type"], json!("plus"));
     assert_eq!(written["display_name"], json!("Restored"));
     assert_eq!(written["avatar_seed"], json!("restored-seed"));
+}
+
+#[test]
+fn write_live_auth_normalizes_top_level_oauth_token_response_to_codex_shape() {
+    let dir = tempdir().expect("tempdir");
+    let live_auth_path = dir.path().join("auth.json");
+    let account = parse_codex_account_from_auth_json(sample_top_level_oauth_token_response())
+        .expect("parse top-level oauth token response");
+
+    write_live_codex_auth_json(&live_auth_path, &account).expect("write normalized live auth");
+
+    let written: serde_json::Value =
+        serde_json::from_str(&std::fs::read_to_string(&live_auth_path).expect("read written auth"))
+            .expect("parse written auth");
+    assert_eq!(written["auth_mode"], json!("chatgpt"));
+    assert_eq!(written["tokens"]["account_id"], json!("acct-top-level"));
+    assert_eq!(written["profile"]["email"], json!("top-level@example.com"));
+    assert_eq!(written["plan_type"], json!("plus"));
+    assert_eq!(written["display_name"], json!("Top Level User"));
+    assert!(written["last_refresh"].as_str().is_some());
+    assert!(written["tokens"]["access_token"].as_str().is_some());
+    assert!(written["tokens"]["refresh_token"].as_str().is_some());
+    assert!(written["tokens"]["id_token"].as_str().is_some());
+    assert!(
+        written.get("access_token").is_none(),
+        "top-level access_token should be normalized into tokens.access_token"
+    );
+    assert!(
+        written.get("refresh_token").is_none(),
+        "top-level refresh_token should be normalized into tokens.refresh_token"
+    );
+    assert!(
+        written.get("id_token").is_none(),
+        "top-level id_token should be normalized into tokens.id_token"
+    );
 }
 
 #[test]

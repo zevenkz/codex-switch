@@ -1,11 +1,10 @@
 # Codex Switch
 
-用于统一管理 Claude Code、Codex、Gemini CLI、OpenCode 和 OpenClaw 供应商配置的桌面应用。
+用于统一管理 Codex 账号配置的桌面应用。
 
 ## 链接
 
 - [English](./README.md)
-- [日本語](./README_JA.md)
 - [用户手册](./docs/user-manual/README.md)
 - [更新日志](./CHANGELOG.md)
 

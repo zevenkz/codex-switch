@@ -38,6 +38,7 @@ pub use commands::{
     cancel_codex_account_oauth_test_hook, delete_codex_account_test_hook,
     complete_codex_account_oauth_test_hook,
     get_active_codex_account_test_hook, list_codex_accounts_test_hook,
+    quit_codex_applescript_for_test,
     refresh_all_codex_account_quotas_test_hook, refresh_codex_account_quota_test_hook,
     start_codex_account_oauth_test_hook, switch_codex_account_test_hook,
 };

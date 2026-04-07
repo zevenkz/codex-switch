@@ -349,10 +349,10 @@ where
 }
 
 fn success_http_response() -> String {
-    "HTTP/1.1 200 OK\r\ncontent-type: text/html; charset=utf-8\r\nconnection: close\r\n\r\n<!doctype html><html><body><h1>Codex Switch</h1><p>Authentication complete. This window will close automatically.</p><script>window.open('','_self');window.close();setTimeout(()=>{window.location.replace('about:blank')},150);</script></body></html>".to_string()
+    "HTTP/1.1 200 OK\r\ncontent-type: text/html; charset=utf-8\r\nconnection: close\r\n\r\n<!doctype html><html><body><h1>Codex Switch</h1><p>Authentication complete. This window will close automatically.</p><script>window.open('','_self');window.close();</script></body></html>".to_string()
 }
 
-#[cfg(any(test, feature = "test-hooks"))]
+#[cfg_attr(not(feature = "test-hooks"), doc(hidden))]
 pub fn success_http_response_for_test() -> String {
     success_http_response()
 }

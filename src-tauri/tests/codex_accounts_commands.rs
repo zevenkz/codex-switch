@@ -6,6 +6,7 @@ use codex_switch_lib::{
     cancel_codex_account_oauth_test_hook, delete_codex_account_test_hook,
     get_active_codex_account_test_hook, list_codex_accounts_test_hook,
     complete_codex_account_oauth_test_hook,
+    quit_codex_applescript_for_test,
     refresh_all_codex_account_quotas_test_hook, refresh_codex_account_quota_test_hook,
     start_codex_account_oauth_test_hook, switch_codex_account_and_restart_test_hook,
     switch_codex_account_test_hook,
@@ -389,6 +390,15 @@ async fn codex_accounts_commands_switch_and_restart_invokes_restart_after_switch
         .expect("get active account")
         .expect("active account exists");
     assert_eq!(active.account_id.as_deref(), Some("acct-target"));
+}
+
+#[test]
+fn codex_accounts_restart_script_waits_for_codex_to_exit_before_reopening() {
+    let script = quit_codex_applescript_for_test();
+
+    assert!(script.contains("tell application \"Codex\" to quit"));
+    assert!(script.contains("exists process \"Codex\""));
+    assert!(script.contains("Timed out waiting for Codex to quit"));
 }
 
 #[tokio::test]

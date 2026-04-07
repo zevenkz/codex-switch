@@ -107,6 +107,7 @@ fn build_live_codex_auth_json(account: &CodexAccountRecord) -> Value {
     };
 
     ensure_object_path(&mut auth_json, &["tokens"]);
+    normalize_top_level_oauth_tokens(&mut auth_json);
 
     if let Some(account_id) = &account.account_id {
         set_path(
@@ -141,8 +142,25 @@ fn build_live_codex_auth_json(account: &CodexAccountRecord) -> Value {
         &["avatar_seed"],
         Value::String(account.avatar_seed.clone()),
     );
+    set_missing_or_null_path(&mut auth_json, &["auth_mode"], Value::String("chatgpt".to_string()));
+    set_missing_or_null_path(
+        &mut auth_json,
+        &["last_refresh"],
+        Value::String(Utc::now().to_rfc3339()),
+    );
+    set_missing_or_null_path(&mut auth_json, &["OPENAI_API_KEY"], Value::Null);
 
     auth_json
+}
+
+fn normalize_top_level_oauth_tokens(root: &mut Value) {
+    for field in ["access_token", "refresh_token", "id_token"] {
+        let top_level = get_path(root, &[field]).cloned();
+        if let Some(value) = top_level {
+            set_path(root, &["tokens", field], value);
+            remove_top_level_key(root, field);
+        }
+    }
 }
 
 fn extract_token_claims(auth_json: &Value) -> Vec<Value> {
@@ -241,4 +259,10 @@ fn get_path<'a>(value: &'a Value, path: &[&str]) -> Option<&'a Value> {
         current = current.get(*key)?;
     }
     Some(current)
+}
+
+fn remove_top_level_key(value: &mut Value, key: &str) {
+    if let Some(obj) = value.as_object_mut() {
+        obj.remove(key);
+    }
 }

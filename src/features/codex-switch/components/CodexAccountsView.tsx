@@ -29,6 +29,11 @@ export function CodexAccountsView({
   const [accountPendingDeletion, setAccountPendingDeletion] =
     useState<CodexAccount | null>(null);
 
+  const handleSwitchAccount = (accountId: string) => {
+    setAccountPendingDeletion(null);
+    onSwitchAccount(accountId);
+  };
+
   return (
     <section className="flex flex-1 flex-col gap-8">
       <header className="flex flex-wrap items-center justify-between gap-6 px-2 pt-2">
@@ -85,7 +90,7 @@ export function CodexAccountsView({
             onSwitch={
               account.status === "active"
                 ? undefined
-                : () => onSwitchAccount(account.id)
+                : () => handleSwitchAccount(account.id)
             }
             onDelete={
               account.status === "active"
