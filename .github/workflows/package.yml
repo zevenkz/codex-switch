@@ -1,0 +1,161 @@
+name: Package
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: package-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-packages:
+    name: Package ${{ matrix.label }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            label: macOS
+            artifact_name: package-macos
+          - os: windows-2022
+            label: windows
+            artifact_name: package-windows
+          - os: ubuntu-22.04
+            label: linux
+            artifact_name: package-linux
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: 10.12.3
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-store
+        shell: bash
+        run: echo "path=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+      - name: Cache pnpm store
+        uses: actions/cache@v5
+        with:
+          path: ${{ steps.pnpm-store.outputs.path }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-pnpm-store-
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Add macOS targets
+        if: runner.os == 'macOS'
+        run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
+
+      - name: Install Linux system deps
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential pkg-config libssl-dev \
+            libgtk-3-dev librsvg2-dev libayatana-appindicator3-dev
+          sudo apt-get install -y --no-install-recommends libwebkit2gtk-4.1-dev \
+            || sudo apt-get install -y --no-install-recommends libwebkit2gtk-4.0-dev
+          sudo apt-get install -y --no-install-recommends libsoup-3.0-dev \
+            || sudo apt-get install -y --no-install-recommends libsoup2.4-dev
+
+      - name: Install frontend deps
+        run: pnpm install --frozen-lockfile
+
+      - name: Build macOS package
+        if: runner.os == 'macOS'
+        run: >
+          pnpm tauri build
+          --target universal-apple-darwin
+          --config '{"bundle":{"createUpdaterArtifacts":false}}'
+
+      - name: Build Windows package
+        if: runner.os == 'Windows'
+        run: >
+          pnpm tauri build
+          --config "{\"bundle\":{\"createUpdaterArtifacts\":false}}"
+
+      - name: Build Linux package
+        if: runner.os == 'Linux'
+        run: >
+          pnpm tauri build
+          --bundles appimage,deb,rpm
+          --config '{"bundle":{"createUpdaterArtifacts":false}}'
+
+      - name: Collect macOS artifacts
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p package-assets
+          APP_PATH=""
+          DMG_PATH=""
+          for path in \
+            "src-tauri/target/universal-apple-darwin/release/bundle/macos" \
+            "src-tauri/target/aarch64-apple-darwin/release/bundle/macos" \
+            "src-tauri/target/x86_64-apple-darwin/release/bundle/macos" \
+            "src-tauri/target/release/bundle/macos"; do
+            if [ -d "$path" ]; then
+              [ -z "$APP_PATH" ] && APP_PATH=$(find "$path" -maxdepth 1 -name "*.app" -type d | head -1 || true)
+              [ -z "$DMG_PATH" ] && DMG_PATH=$(find "$path" -maxdepth 1 -name "*.dmg" -type f | head -1 || true)
+            fi
+          done
+          if [ -n "$APP_PATH" ]; then
+            ditto -c -k --sequesterRsrc --keepParent "$APP_PATH" package-assets/codex-switch-macos.app.zip
+          fi
+          if [ -n "$DMG_PATH" ]; then
+            cp "$DMG_PATH" package-assets/
+          fi
+          ls -la package-assets
+
+      - name: Collect Windows artifacts
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force -Path package-assets | Out-Null
+          $files = Get-ChildItem -Path 'src-tauri/target/release/bundle' -Recurse -File -Include *.msi,*.exe -ErrorAction SilentlyContinue
+          if (-not $files) {
+            throw 'No Windows bundle artifacts were produced.'
+          }
+          foreach ($file in $files) {
+            Copy-Item $file.FullName (Join-Path 'package-assets' $file.Name)
+          }
+          Get-ChildItem package-assets
+
+      - name: Collect Linux artifacts
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          mkdir -p package-assets
+          find src-tauri/target/release/bundle -type f \( -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" \) -exec cp {} package-assets/ \;
+          test -n "$(find package-assets -maxdepth 1 -type f | head -1)"
+          ls -la package-assets
+
+      - name: Upload packaged artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: package-assets/*
+          if-no-files-found: error
