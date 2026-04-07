@@ -14,22 +14,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-packages:
-    name: Package ${{ matrix.label }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: macos-14
-            label: macOS
-            artifact_name: package-macos
-          - os: windows-2022
-            label: windows
-            artifact_name: package-windows
-          - os: ubuntu-22.04
-            label: linux
-            artifact_name: package-linux
+  build-package:
+    name: Package macOS
+    runs-on: macos-14
 
     steps:
       - name: Checkout
@@ -62,48 +49,18 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Add macOS targets
-        if: runner.os == 'macOS'
         run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
-
-      - name: Install Linux system deps
-        if: runner.os == 'Linux'
-        shell: bash
-        run: |
-          set -euxo pipefail
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            build-essential pkg-config libssl-dev \
-            libgtk-3-dev librsvg2-dev libayatana-appindicator3-dev
-          sudo apt-get install -y --no-install-recommends libwebkit2gtk-4.1-dev \
-            || sudo apt-get install -y --no-install-recommends libwebkit2gtk-4.0-dev
-          sudo apt-get install -y --no-install-recommends libsoup-3.0-dev \
-            || sudo apt-get install -y --no-install-recommends libsoup2.4-dev
 
       - name: Install frontend deps
         run: pnpm install --frozen-lockfile
 
       - name: Build macOS package
-        if: runner.os == 'macOS'
         run: >
           pnpm tauri build
           --target universal-apple-darwin
           --config '{"bundle":{"createUpdaterArtifacts":false}}'
 
-      - name: Build Windows package
-        if: runner.os == 'Windows'
-        run: >
-          pnpm tauri build
-          --config "{\"bundle\":{\"createUpdaterArtifacts\":false}}"
-
-      - name: Build Linux package
-        if: runner.os == 'Linux'
-        run: >
-          pnpm tauri build
-          --bundles appimage,deb,rpm
-          --config '{"bundle":{"createUpdaterArtifacts":false}}'
-
       - name: Collect macOS artifacts
-        if: runner.os == 'macOS'
         shell: bash
         run: |
           set -euxo pipefail
@@ -128,34 +85,9 @@ jobs:
           fi
           ls -la package-assets
 
-      - name: Collect Windows artifacts
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          New-Item -ItemType Directory -Force -Path package-assets | Out-Null
-          $files = Get-ChildItem -Path 'src-tauri/target/release/bundle' -Recurse -File -Include *.msi,*.exe -ErrorAction SilentlyContinue
-          if (-not $files) {
-            throw 'No Windows bundle artifacts were produced.'
-          }
-          foreach ($file in $files) {
-            Copy-Item $file.FullName (Join-Path 'package-assets' $file.Name)
-          }
-          Get-ChildItem package-assets
-
-      - name: Collect Linux artifacts
-        if: runner.os == 'Linux'
-        shell: bash
-        run: |
-          set -euxo pipefail
-          mkdir -p package-assets
-          find src-tauri/target/release/bundle -type f \( -name "*.AppImage" -o -name "*.deb" -o -name "*.rpm" \) -exec cp {} package-assets/ \;
-          test -n "$(find package-assets -maxdepth 1 -type f | head -1)"
-          ls -la package-assets
-
       - name: Upload packaged artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact_name }}
+          name: package-macos
           path: package-assets/*
           if-no-files-found: error
